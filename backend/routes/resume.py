@@ -10,7 +10,7 @@ async def upload_resume(file: UploadFile = File(...)):
     contents = await file.read()
 
     
-    structured_data = parse_resume(contents)
+    structured_data = parse_resume(contents, True)
 
     return {
         "resume_json": structured_data

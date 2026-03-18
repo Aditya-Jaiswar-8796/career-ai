@@ -40,7 +40,7 @@ def skill_gap_prompt(resume, job):
     Job Description:
     {job}
 
-    learning_plan should be a 4 week roadmap.
+    learning_plan should be a 4 week roadmap if possible.
     Return JSON only.
     """
 

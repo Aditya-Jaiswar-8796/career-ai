@@ -3,7 +3,7 @@ from services.ai_engine import ask_ai
 from utils.prompts import resume_parse_prompt
 import fitz
 
-def parse_resume(file_bytes):
+def parse_resume(file_bytes,ifjson: bool):
 
     text = ""
 
@@ -16,7 +16,10 @@ def parse_resume(file_bytes):
 
 
     prompt = resume_parse_prompt(text)
+    if ifjson :
+        result = ask_ai(prompt)
+    else :
+        result = text
 
-    result = ask_ai(prompt)
 
     return result

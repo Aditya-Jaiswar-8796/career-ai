@@ -3,8 +3,10 @@ from routes import resume
 from routes import job
 from routes import skill_gap
 from routes import rewrite
+from routes import bulk_resume
 app = FastAPI()
 
+app.include_router(bulk_resume.router)
 app.include_router(rewrite.router)
 
 app.include_router(skill_gap.router)
