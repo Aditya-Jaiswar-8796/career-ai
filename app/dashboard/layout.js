@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }) {
         {/* Sidebar */}
         <div className="border-r border-border">
           <div className="border-b border-border p-4">
-            <Link href="/dashboard" className="flex items-center gap-2 font-bold text-primary">
+            <Link href="/" className="flex items-center gap-2 font-bold text-primary">
               <span className="text-xl">⚡</span>
               CareerAI
             </Link>

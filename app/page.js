@@ -4,6 +4,11 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Zap, Target, TrendingUp, Users, Shield } from 'lucide-react'
 import { useSession, signOut } from "next-auth/react";
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function LandingPage() {
   const containerRef = useRef(null)
@@ -13,23 +18,118 @@ export default function LandingPage() {
   const ctaRef = useRef(null)
   const { data: session, status } = useSession();
 
+  useGSAP(() => {
+    //nav and hero S gsap 
+    
+      let tl = gsap.timeline()
+      tl.from(".logo ", {
+        y: -20,
+        duration: 0.7,
+        opacity: 0
+      })
+
+      tl.from("nav a", {
+        y: -10,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.5
+      }, "-=0.4")
+
+      tl.from(heroRef.current.querySelector("h1"), {
+        x: 100,
+        opacity: 0,
+        duration: .5
+      }, "show", "-=0.3")
+      tl.from(heroRef.current.querySelector("p"), {
+        x: -100,
+        opacity: 0,
+        duration: .5
+      }, "show")
+      tl.from(".btn1", {
+        x: 200,
+        opacity: 0,
+        duration: 0.4,
+        ease: "elastic.inOut"
+      }, "bttn")
+      tl.from(".btn2", {
+        x: -200,
+        opacity: 0,
+        duration: 0.6,
+        ease: "elastic.inOut"
+      }, "bttn")
+    
+
+    //features
+    
+      let tl1 = gsap.timeline({
+        scrollTrigger: {
+          trigger: featuresRef.current,
+          start: "top 50%",
+          end: "top -5%",
+          scrub: 1
+        }
+      })
+      tl1.from(" #features #righ , #features h2", {
+        x: 100,
+        opacity: 0,
+        duration: 0.2,
+      }, "f1")
+      tl1.from(" #features #lef , #features h2~p", {
+        x: -100,
+        opacity: 0,
+        duration: 0.2,
+      }, "f1")
+      tl1.from(" #features #cent1", {
+        y: -100,
+        opacity: 0,
+        duration: 0.2,
+      }, "f1")
+      tl1.from(" #features #cent2", {
+        y: 100,
+        opacity: 0,
+        duration: 0.2,
+      }, "f1")
+    
+
+    //work
+    let tl2 = gsap.timeline({
+      scrollTrigger: {
+          trigger: "#how-it-works",
+          start: "top 50%",
+          end: "top 5%",
+          scrub: 1
+        }})
+
+        tl2.from("#how-it-works h2, #how-it-works p,#how-it-works h3",{
+          scale:0.75,
+          duration:.5,
+        })
+
+
+  }, { scope: containerRef })
+
+
 
   return (
-    <div ref={containerRef} className="w-full overflow-hidden bg-gradient-to-b from-background to-background">
+    <div ref={containerRef} className="w-full overflow-hidden bg-linear-to-b from-background to-background">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md z-50 border-b border-border">
-        <div className="max-w-full mx-10 px-6 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-primary flex items-center gap-2">
+        <div className="max-w-full  mx-10 px-6 py-4 flex items-center justify-between">
+          <div className="text-2xl logo font-bold text-primary flex items-center gap-2">
             <Sparkles className="w-6 h-6" />
             CareerAI
           </div>
-          <div className="hidden gap-8 md:flex"><Link href="#features" className="text-sm font-medium transition hover:text-primary">Features</Link><Link href="#how-it-works" className="text-sm font-medium transition hover:text-primary">How It Works</Link><Link href="#pricing" className="text-sm font-medium transition hover:text-primary">Pricing</Link></div>
-          <div className="flex items-center gap-4">
+          <div className="nav-item gap-8 flex">
+            <Link href="#features" className="text-sm font-medium  hover:text-primary">Features</Link>
+            <Link href="#how-it-works" className="text-sm font-medium  hover:text-primary">How It Works</Link>
+            <Link href="#pricing" className="text-sm font-medium ` hover:text-primary">Pricing</Link>
+          </div>
+          <div className="nav-options flex items-center gap-4">
             <Link href={session ? "/dashboard" : "/auth/login"}>
-              <button className={`inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap text-sm  transition-all shrink-0 outline-none ${session ? "px-2 py-1 rounded-2xl text-slate-400 font-semibold":"hover:bg-accent rounded-md  font-medium hover:text-primary-foreground h-10 px-6"}  bg-background/90 border-border/90 border shadow-md  `}>{session ? session.user.email:"Login"}</button>
+              <button className={`inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap text-sm  transition-all shrink-0 outline-none ${session ? "px-2 py-1 rounded-2xl text-slate-400 font-semibold" : "hover:bg-accent rounded-md  font-medium hover:text-primary-foreground h-10 px-6"}  bg-background/90 border-border/90 border shadow-md  `}>{session ? session.user.email : "Login"}</button>
             </Link>
-            <Link onClick={() => { session && signOut() }} className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
-              <button>{session ? "Sign Out":"Get Started"}</button>
+            <Link onClick={() => { session && signOut() }} className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
+              <button>{session ? "Sign Out" : "Get Started"}</button>
             </Link>
           </div>
         </div>
@@ -37,9 +137,9 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="hero-glow absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="hero-glow absolute bottom-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
 
         <div className="hero-content relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
@@ -48,14 +148,14 @@ export default function LandingPage() {
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
             Land your dream job with AI-powered resume analysis, skill gap detection, and personalized career guidance
           </p>
-          <div className="flex items-center sm:flex-row gap-4 justify-center">
-            <Link className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-accent text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
-              <button  className=" flex gap-2">
+          <div className=" flex items-center sm:flex-row gap-4 justify-center">
+            <Link className="btn1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none bg-accent text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
+              <button className=" flex gap-2">
                 Start Free Trial <ArrowRight className="w-5 h-5" />
               </button>
             </Link>
-            <Link className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none hover:bg-accent hover:text-primary-foreground bg-background/90 border-border/90 border shadow-md h-10 rounded-md px-6" href="#features">
-              <button size="lg" className="cta-button">
+            <Link className="btn2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none hover:bg-accent hover:text-primary-foreground bg-background/90 border-border/90 border shadow-md h-10 rounded-md px-6" href="#features">
+              <button size="lg" className=" btn cta-button">
                 Explore Features
               </button>
             </Link>
@@ -64,7 +164,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" ref={featuresRef} className="py-24 px-6 bg-card/50">
+      <section id="features" ref={featuresRef} className="py-24 overflow-hidden px-6 bg-card/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-foreground mb-4">Powerful Features</h2>
@@ -75,38 +175,41 @@ export default function LandingPage() {
             {[
               {
                 icon: Zap,
+                side: "lef",
                 title: 'AI Resume Analysis',
                 description: 'Get instant feedback on your resume with AI-powered scoring and improvement suggestions'
               },
               {
                 icon: Target,
+                side: "cent1",
                 title: 'Job Matching',
                 description: 'Match your resume against job descriptions and see compatibility scores'
               },
               {
                 icon: TrendingUp,
+                side: "righ",
                 title: 'Skill Gap Analysis',
-                description: 'Identify missing skills and get a personalized learning roadmap'
+                description: 'Identify missing skills and get a personalized learning roadmap to get your goals'
               },
               {
-                icon: Sparkles,
+                icon: Sparkles, side: "lef",
                 title: 'Resume Optimization',
                 description: 'AI-powered resume rewriting to highlight your best achievements'
               },
               {
-                icon: Users,
+                icon: Users, side: "cent2",
                 title: 'Candidate Ranking',
                 description: 'For recruiters: rank candidates and find top talent efficiently'
               },
               {
-                icon: Shield,
+                icon: Shield, side: "righ",
                 title: 'Secure & Private',
                 description: 'Your data is encrypted and never shared with third parties'
               }
             ].map((feature, index) => {
               const Icon = feature.icon
               return (
-                <div key={index} className="feature-card group relative">
+                <div key={index} id={feature.side} className="feature-card group relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="relative p-8 rounded-xl border border-border bg-background/50 hover:bg-background transition-colors">
                     <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
@@ -125,18 +228,18 @@ export default function LandingPage() {
       {/* How It Works */}
       <section id="how-it-works" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="overflow-hidden text-center mb-16">
             <h2 className="text-4xl font-bold text-foreground mb-4">How It Works</h2>
             <p className="text-lg text-muted-foreground">Three simple steps to transform your career</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div id='steps' className="grid md:grid-cols-3 gap-8">
             {[
               { number: '1', title: 'Upload', description: 'Upload your resume in seconds' },
               { number: '2', title: 'Analyze', description: 'Get AI-powered insights and recommendations' },
               { number: '3', title: 'Improve', description: 'Implement feedback and land your dream job' }
             ].map((step, index) => (
-              <div key={index} className="feature-card text-center">
+              <div key={index} className="overflow-hidden feature-card text-center">
                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">{step.number}</span>
                 </div>
@@ -236,11 +339,10 @@ export default function LandingPage() {
             ].map((plan, index) => (
               <div
                 key={index}
-                className={`feature-card p-8 rounded-xl border transition-all ${
-                  plan.highlighted
-                    ? 'bg-primary/10 border-primary md:scale-105'
-                    : 'bg-background/50 border-border'
-                }`}
+                className={`feature-card p-8 rounded-xl border transition-all ${plan.highlighted
+                  ? 'bg-primary/10 border-primary md:scale-105'
+                  : 'bg-background/50 border-border'
+                  }`}
               >
                 <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
                 <div className="mb-6">

@@ -15,7 +15,16 @@ def resume_parse_prompt(text):
         education
         experience
         projects
+        score:
+            comment:
+            experienceScore:
+            formattingScore:
+            keywordScore:
+            overallScore:
+            structureScore:
+            recommendations:
 
+        in score we have overall score , comment: only a small statement, scores for structure, keyword, experience, formatting, top 3 recomandation all the score data must range between 0 to 100
         Resume Text:
         {text}
         """
