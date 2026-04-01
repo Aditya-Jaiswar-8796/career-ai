@@ -27,12 +27,12 @@ const hrMenuItems = [
 export default function DashboardLayout({ children }) {
 
   const { data: session, status } = useSession()
-
+  const [userType, setUserType] = useState(session?.user.role)
   const [userPanel, setUserPanel] = useState(false)
-  const [userType] = useState('seeker')
   const [isMobile, setIsMobile] = useState(false)
   const headerRef = useRef(null)
   const sidebarRef = useRef(null)
+
 
   const items = userType === 'seeker' ? menuItems : hrMenuItems
 

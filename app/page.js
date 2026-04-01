@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Zap, Target, TrendingUp, Users, Shield } from 'lucide-react'
 import { useSession, signOut } from "next-auth/react";
@@ -19,110 +19,252 @@ export default function LandingPage() {
   const { data: session, status } = useSession();
 
   useGSAP(() => {
-    //nav and hero S gsap 
-    
-      let tl = gsap.timeline()
-      tl.from(".logo ", {
-        y: -20,
-        duration: 0.7,
-        opacity: 0
+    const root = containerRef.current
+    const hero = heroRef.current
+    if (!root || !hero) return
+
+    const ctx = gsap.context((self) => {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      // —— Hero entrance
+      const intro = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        paused: reduced,
       })
 
-      tl.from("nav a", {
-        y: -10,
-        opacity: 0,
-        stagger: 0.15,
-        duration: 0.5
-      }, "-=0.4")
+      intro
+        .from('.landing-logo', { y: -28, opacity: 0, duration: 0.65 })
+        .from(
+          '.nav-item a',
+          { y: -14, opacity: 0, stagger: 0.07, duration: 0.45 },
+          '-=0.4'
+        )
+        .from(
+          '.nav-options > *',
+          { y: -12, opacity: 0, stagger: 0.08, duration: 0.4 },
+          '-=0.35'
+        )
+        .from(
+          '.hero-line-inner',
+          { yPercent: 110, opacity: 0, stagger: 0.11, duration: 0.75 },
+          '-=0.25'
+        )
+        .from('.hero-subtitle', { y: 32, opacity: 0, duration: 0.55 }, '-=0.45')
+        .from(
+          '.hero-cta > *',
+          {
+            y: 40,
+            opacity: 0,
+            stagger: 0.12,
+            duration: 0.55,
+            ease: 'back.out(1.35)',
+          },
+          '-=0.35'
+        )
 
-      tl.from(heroRef.current.querySelector("h1"), {
-        x: 100,
-        opacity: 0,
-        duration: .5
-      }, "show", "-=0.3")
-      tl.from(heroRef.current.querySelector("p"), {
-        x: -100,
-        opacity: 0,
-        duration: .5
-      }, "show")
-      tl.from(".btn1", {
-        x: 200,
-        opacity: 0,
-        duration: 0.4,
-        ease: "elastic.inOut"
-      }, "bttn")
-      tl.from(".btn2", {
-        x: -200,
-        opacity: 0,
-        duration: 0.6,
-        ease: "elastic.inOut"
-      }, "bttn")
-    
+      if (reduced) {
+        intro.progress(1, false)
+      }
 
-    //features
-    
-      let tl1 = gsap.timeline({
-        scrollTrigger: {
-          trigger: featuresRef.current,
-          start: "top 50%",
-          end: "top -5%",
-          scrub: 1
-        }
-      })
-      tl1.from(" #features #righ , #features h2", {
-        x: 100,
-        opacity: 0,
-        duration: 0.2,
-      }, "f1")
-      tl1.from(" #features #lef , #features h2~p", {
-        x: -100,
-        opacity: 0,
-        duration: 0.2,
-      }, "f1")
-      tl1.from(" #features #cent1", {
-        y: -100,
-        opacity: 0,
-        duration: 0.2,
-      }, "f1")
-      tl1.from(" #features #cent2", {
-        y: 100,
-        opacity: 0,
-        duration: 0.2,
-      }, "f1")
-    
-
-    //work
-    let tl2 = gsap.timeline({
-      scrollTrigger: {
-          trigger: "#how-it-works",
-          start: "top 50%",
-          end: "top 5%",
-          scrub: 1
-        }})
-
-        tl2.from("#how-it-works h2, #how-it-works p,#how-it-works h3",{
-          scale:0.75,
-          duration:.5,
+      if (!reduced) {
+        gsap.to('.hero-blob', {
+          y: 'random(-18, 18)',
+          x: 'random(-12, 12)',
+          duration: 'random(5, 8)',
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          stagger: { each: 0.4, from: 'random' },
         })
 
+        const onMove = (e) => {
+          const { innerWidth: w, innerHeight: h } = window
+          const nx = (e.clientX / w - 0.5) * 2
+          const ny = (e.clientY / h - 0.5) * 2
+          gsap.to('.hero-blob-1', {
+            x: nx * 36,
+            y: ny * 28,
+            duration: 1.15,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          })
+          gsap.to('.hero-blob-2', {
+            x: -nx * 28,
+            y: -ny * 22,
+            duration: 1.15,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          })
+        }
+        hero.addEventListener('mousemove', onMove)
+        self.add(() => hero.removeEventListener('mousemove', onMove))
+      }
 
+      if (reduced) return
+
+      // —— Features: scroll reveal
+      const featCards = gsap.utils.toArray(root.querySelectorAll('#features .feature-reveal'))
+      featCards.forEach((card, i) => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse',
+          },
+          y: 56,
+          opacity: 0,
+          rotateX: 6,
+          transformOrigin: '50% 100%',
+          duration: 0.7,
+          delay: i * 0.04,
+          ease: 'power3.out',
+        })
+      })
+
+      gsap.from('#features .features-header', {
+        scrollTrigger: {
+          trigger: featuresRef.current,
+          start: 'top 78%',
+          toggleActions: 'play none none reverse',
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.65,
+        ease: 'power3.out',
+      })
+
+      gsap.from('#how-it-works .features-header', {
+        scrollTrigger: { trigger: '#how-it-works', start: 'top 78%' },
+        y: 36,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+      })
+      gsap.from('#how-it-works .step-card', {
+        scrollTrigger: { trigger: '#how-it-works .step-grid', start: 'top 82%' },
+        y: 48,
+        opacity: 0,
+        stagger: 0.14,
+        duration: 0.65,
+        ease: 'power3.out',
+      })
+
+      const statNums = root.querySelectorAll('.stat-number')
+      statNums.forEach((el) => {
+        const end = parseInt(el.getAttribute('data-value') || '0', 10)
+        const obj = { v: 0 }
+        gsap.to(obj, {
+          v: end,
+          duration: 2.1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            once: true,
+          },
+          onUpdate: () => {
+            el.textContent = Math.round(obj.v).toLocaleString()
+          },
+        })
+      })
+
+      const statsGrid = statsRef.current?.querySelector('.stats-grid')
+      if (statsGrid) {
+        gsap.from(gsap.utils.toArray(statsGrid.children), {
+          scrollTrigger: {
+            trigger: statsRef.current,
+            start: 'top 82%',
+          },
+          y: 36,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 0.55,
+          ease: 'power3.out',
+        })
+      }
+
+      gsap.from('.testimonials-header', {
+        scrollTrigger: { trigger: '.testimonials-section', start: 'top 78%' },
+        y: 32,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+      })
+      gsap.from('.testimonial-card', {
+        scrollTrigger: { trigger: '.testimonials-grid', start: 'top 85%' },
+        y: 40,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.65,
+        ease: 'power3.out',
+      })
+
+      gsap.from('#pricing .features-header', {
+        scrollTrigger: { trigger: '#pricing', start: 'top 78%', once: true },
+        y: 32,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+      })
+      const pricingCards = root.querySelectorAll('#pricing .pricing-card')
+      if (pricingCards.length) {
+        gsap.fromTo(
+          pricingCards,
+          { y: 48, opacity: 0, scale: 0.97 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: 'power3.out',
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: '#pricing',
+              start: 'top 72%',
+              once: true,
+            },
+          }
+        )
+      }
+
+      if (ctaRef.current) {
+        gsap.from(gsap.utils.toArray(ctaRef.current.children), {
+          scrollTrigger: { trigger: ctaRef.current, start: 'top 82%' },
+          y: 44,
+          opacity: 0,
+          stagger: 0.15,
+          duration: 0.7,
+          ease: 'power3.out',
+        })
+      }
+
+      gsap.from('footer .footer-col', {
+        scrollTrigger: { trigger: 'footer', start: 'top 92%' },
+        y: 24,
+        opacity: 0,
+        stagger: 0.06,
+        duration: 0.5,
+        ease: 'power2.out',
+      })
+    }, root)
+
+    return () => ctx.revert()
   }, { scope: containerRef })
-
-
 
   return (
     <div ref={containerRef} className="w-full overflow-hidden bg-linear-to-b from-background to-background">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md z-50 border-b border-border">
         <div className="max-w-full  mx-10 px-6 py-4 flex items-center justify-between">
-          <div className="text-2xl logo font-bold text-primary flex items-center gap-2">
+          <div className="text-2xl landing-logo font-bold text-primary flex items-center gap-2">
             <Sparkles className="w-6 h-6" />
             CareerAI
           </div>
           <div className="nav-item gap-8 flex">
             <Link href="#features" className="text-sm font-medium  hover:text-primary">Features</Link>
             <Link href="#how-it-works" className="text-sm font-medium  hover:text-primary">How It Works</Link>
-            <Link href="#pricing" className="text-sm font-medium ` hover:text-primary">Pricing</Link>
+            <Link href="#pricing" className="text-sm font-medium hover:text-primary">Pricing</Link>
           </div>
           <div className="nav-options flex items-center gap-4">
             <Link href={session ? "/dashboard" : "/auth/login"}>
@@ -136,26 +278,31 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      <section ref={heroRef} className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden pt-20 [perspective:1200px]">
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
+        <div className="hero-blob hero-blob-1 absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl will-change-transform" />
+        <div className="hero-blob hero-blob-2 absolute bottom-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl will-change-transform" />
 
         <div className="hero-content relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
-            Your AI Career <span className="text-primary">Superpower</span>
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight overflow-hidden">
+            <span className="hero-line block overflow-hidden">
+              <span className="hero-line-inner inline-block">Your AI Career </span>
+            </span>
+            <span className="hero-line block overflow-hidden">
+              <span className="hero-line-inner inline-block text-primary">Superpower</span>
+            </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="hero-subtitle text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
             Land your dream job with AI-powered resume analysis, skill gap detection, and personalized career guidance
           </p>
-          <div className=" flex items-center sm:flex-row gap-4 justify-center">
-            <Link className="btn1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none bg-accent text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
+          <div className="hero-cta flex items-center sm:flex-row gap-4 justify-center">
+            <Link className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none bg-accent text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6" href="/auth/signup">
               <button className=" flex gap-2">
                 Start Free Trial <ArrowRight className="w-5 h-5" />
               </button>
             </Link>
-            <Link className="btn2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none hover:bg-accent hover:text-primary-foreground bg-background/90 border-border/90 border shadow-md h-10 rounded-md px-6" href="#features">
-              <button size="lg" className=" btn cta-button">
+            <Link className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium shrink-0 outline-none hover:bg-accent hover:text-primary-foreground bg-background/90 border-border/90 border shadow-md h-10 rounded-md px-6" href="#features">
+              <button className="cta-button">
                 Explore Features
               </button>
             </Link>
@@ -166,7 +313,7 @@ export default function LandingPage() {
       {/* Features Section */}
       <section id="features" ref={featuresRef} className="py-24 overflow-hidden px-6 bg-card/50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 features-header">
             <h2 className="text-4xl font-bold text-foreground mb-4">Powerful Features</h2>
             <p className="text-lg text-muted-foreground">Everything you need to advance your career</p>
           </div>
@@ -209,7 +356,7 @@ export default function LandingPage() {
             ].map((feature, index) => {
               const Icon = feature.icon
               return (
-                <div key={index} id={feature.side} className="feature-card group relative">
+                <div key={index} data-feature-side={feature.side} className="feature-card feature-reveal group relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="relative p-8 rounded-xl border border-border bg-background/50 hover:bg-background transition-colors">
                     <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
@@ -228,18 +375,18 @@ export default function LandingPage() {
       {/* How It Works */}
       <section id="how-it-works" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="overflow-hidden text-center mb-16">
+          <div className="overflow-hidden text-center mb-16 features-header">
             <h2 className="text-4xl font-bold text-foreground mb-4">How It Works</h2>
             <p className="text-lg text-muted-foreground">Three simple steps to transform your career</p>
           </div>
 
-          <div id='steps' className="grid md:grid-cols-3 gap-8">
+          <div id='steps' className="step-grid grid md:grid-cols-3 gap-8">
             {[
               { number: '1', title: 'Upload', description: 'Upload your resume in seconds' },
               { number: '2', title: 'Analyze', description: 'Get AI-powered insights and recommendations' },
               { number: '3', title: 'Improve', description: 'Implement feedback and land your dream job' }
             ].map((step, index) => (
-              <div key={index} className="overflow-hidden feature-card text-center">
+              <div key={index} className="overflow-hidden step-card text-center">
                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">{step.number}</span>
                 </div>
@@ -254,7 +401,7 @@ export default function LandingPage() {
       {/* Stats Section */}
       <section ref={statsRef} className="py-24 px-6 bg-card/50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="stats-grid grid md:grid-cols-4 gap-8">
             {[
               { label: 'Active Users', value: '50' },
               { label: 'Resumes Analyzed', value: '10000' },
@@ -262,7 +409,7 @@ export default function LandingPage() {
               { label: 'Success Rate', value: '92' }
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="stat-number text-4xl font-bold text-primary mb-2">0</div>
+                <div className="stat-number text-4xl font-bold text-primary mb-2" data-value={stat.value}>0</div>
                 <p className="text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -271,14 +418,14 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 px-6">
+      <section className="testimonials-section py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 testimonials-header">
             <h2 className="text-4xl font-bold text-foreground mb-4">What Users Say</h2>
             <p className="text-lg text-muted-foreground">Join thousands of professionals who've transformed their careers</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="testimonials-grid grid md:grid-cols-3 gap-8">
             {[
               {
                 name: 'Sarah Johnson',
@@ -311,12 +458,12 @@ export default function LandingPage() {
       {/* Pricing Section */}
       <section id='pricing' className="py-24 px-6 bg-card/50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 features-header">
             <h2 className="text-4xl font-bold text-foreground mb-4">Simple, Transparent Pricing</h2>
             <p className="text-lg text-muted-foreground">Choose the plan that fits your needs</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="pricing-grid grid md:grid-cols-3 gap-8">
             {[
               {
                 name: 'Starter',
@@ -339,7 +486,7 @@ export default function LandingPage() {
             ].map((plan, index) => (
               <div
                 key={index}
-                className={`feature-card p-8 rounded-xl border transition-all ${plan.highlighted
+                className={`pricing-card feature-card p-8 rounded-xl border transition-all ${plan.highlighted
                   ? 'bg-primary/10 border-primary md:scale-105'
                   : 'bg-background/50 border-border'
                   }`}
@@ -391,11 +538,11 @@ export default function LandingPage() {
       <footer className="border-t border-border bg-card/50 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
+            <div className="footer-col">
               <p className="font-semibold text-foreground mb-4">CareerAI</p>
               <p className="text-muted-foreground">AI-powered career advancement platform</p>
             </div>
-            <div>
+            <div className="footer-col">
               <p className="font-semibold text-foreground mb-4">Product</p>
               <ul className="space-y-2 text-muted-foreground">
                 <li><Link href="#" className="hover:text-primary">Features</Link></li>
@@ -403,7 +550,7 @@ export default function LandingPage() {
                 <li><Link href="#" className="hover:text-primary">FAQ</Link></li>
               </ul>
             </div>
-            <div>
+            <div className="footer-col">
               <p className="font-semibold text-foreground mb-4">Company</p>
               <ul className="space-y-2 text-muted-foreground">
                 <li><Link href="#" className="hover:text-primary">About</Link></li>
@@ -411,7 +558,7 @@ export default function LandingPage() {
                 <li><Link href="#" className="hover:text-primary">Contact</Link></li>
               </ul>
             </div>
-            <div>
+            <div className="footer-col">
               <p className="font-semibold text-foreground mb-4">Legal</p>
               <ul className="space-y-2 text-muted-foreground">
                 <li><Link href="#" className="hover:text-primary">Privacy</Link></li>

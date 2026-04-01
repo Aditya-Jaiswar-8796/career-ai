@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { CheckCircle2, Circle, Lock, Target } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -113,7 +111,7 @@ export default function CareerRoadmap() {
                 <div className="absolute left-6 top-24 w-1 h-16 bg-gradient-to-b from-primary/50 to-primary/10" />
               )}
 
-              <Card className={`p-6 border transition-all ${
+              <div className={`p-6 border transition-all ${
                 phase.status === 'completed' 
                   ? 'border-green-500/20 bg-green-500/5'
                   : phase.status === 'in-progress'
@@ -163,26 +161,26 @@ export default function CareerRoadmap() {
                     )}
 
                     {phase.status !== 'upcoming' && (
-                      <Button size="sm" variant="outline" className="mt-4">
+                      <button type="button" className="mt-4 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                         {phase.status === 'completed' ? 'Review' : 'Continue Learning'}
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </div>
-              </Card>
+              </div>
             </div>
           )
         })}
       </div>
 
-      <Card className="mt-12 p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
+      <div className="mt-12 p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
         <h3 className="text-lg font-bold text-foreground mb-3">Next Steps</h3>
         <ol className="space-y-2 text-muted-foreground">
           <li className="flex gap-2"><span className="font-bold text-primary">1.</span> Complete remaining tasks in Phase 2</li>
           <li className="flex gap-2"><span className="font-bold text-primary">2.</span> Network with engineers in your target role</li>
           <li className="flex gap-2"><span className="font-bold text-primary">3.</span> Apply for senior developer positions</li>
         </ol>
-      </Card>
+      </div>
     </div>
   )
 }

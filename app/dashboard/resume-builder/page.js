@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Plus, Download, Eye, Edit2 } from 'lucide-react'
 
 export default function ResumeBuilder() {
@@ -91,7 +88,7 @@ export default function ResumeBuilder() {
             ))}
           </div>
 
-          <Card className="p-6 border border-border bg-card/50 backdrop-blur-sm">
+          <div className="p-6 border border-border rounded-xl bg-card/50 backdrop-blur-sm">
             {editMode === 'summary' && (
               <div className="space-y-4">
                 <h2 className="text-lg font-bold text-foreground">Professional Summary</h2>
@@ -111,20 +108,20 @@ export default function ResumeBuilder() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Job Title</label>
-                    <Input placeholder="Senior Product Manager" className="border-border" />
+                    <input placeholder="Senior Product Manager" className="border-border" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Company</label>
-                    <Input placeholder="Company Name" className="border-border" />
+                    <input placeholder="Company Name" className="border-border" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1">Start Date</label>
-                      <Input type="date" className="border-border" />
+                      <input type="date" className="border-border" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1">End Date</label>
-                      <Input type="date" className="border-border" />
+                      <input type="date" className="border-border" />
                     </div>
                   </div>
                   <div>
@@ -135,10 +132,10 @@ export default function ResumeBuilder() {
                     />
                   </div>
                 </div>
-                <Button className="w-full gap-2">
+                <button type="button" className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                   <Plus className="w-4 h-4" />
                   Add Experience
-                </Button>
+                </button>
               </div>
             )}
 
@@ -148,21 +145,21 @@ export default function ResumeBuilder() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">School/University</label>
-                    <Input placeholder="University Name" className="border-border" />
+                    <input placeholder="University Name" className="border-border" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Degree</label>
-                    <Input placeholder="Bachelor of Science" className="border-border" />
+                    <input placeholder="Bachelor of Science" className="border-border" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Field of Study</label>
-                    <Input placeholder="Computer Science" className="border-border" />
+                    <input placeholder="Computer Science" className="border-border" />
                   </div>
                 </div>
-                <Button className="w-full gap-2">
+                <button type="button" className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                   <Plus className="w-4 h-4" />
                   Add Education
-                </Button>
+                </button>
               </div>
             )}
 
@@ -172,7 +169,7 @@ export default function ResumeBuilder() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Skill</label>
-                    <Input placeholder="e.g., Project Management, Leadership" className="border-border" />
+                    <input placeholder="e.g., Project Management, Leadership" className="border-border" />
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {['Leadership', 'Strategic Planning', 'Analytics', 'Communication'].map((skill) => (
@@ -186,10 +183,10 @@ export default function ResumeBuilder() {
                     ))}
                   </div>
                 </div>
-                <Button className="w-full gap-2">
+                <button type="button" className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                   <Plus className="w-4 h-4" />
                   Add Skill
-                </Button>
+                </button>
               </div>
             )}
 
@@ -199,7 +196,7 @@ export default function ResumeBuilder() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Project Name</label>
-                    <Input placeholder="Project Title" className="border-border" />
+                    <input placeholder="Project Title" className="border-border" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Description</label>
@@ -209,34 +206,34 @@ export default function ResumeBuilder() {
                     />
                   </div>
                 </div>
-                <Button className="w-full gap-2">
+                <button type="button" className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                   <Plus className="w-4 h-4" />
                   Add Project
-                </Button>
+                </button>
               </div>
             )}
 
-            <Button variant="outline" className="w-full mt-4">
+            <button type="button" className="inline-flex w-full mt-4 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
               <Edit2 className="w-4 h-4 mr-2" />
               Save Changes
-            </Button>
-          </Card>
+            </button>
+          </div>
         </div>
 
         {/* Preview */}
         <div ref={previewRef} className="space-y-4">
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
+            <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
               <Eye className="w-4 h-4" />
               Preview
-            </Button>
-            <Button size="sm" className="gap-2">
+            </button>
+            <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
               <Download className="w-4 h-4" />
               Download PDF
-            </Button>
+            </button>
           </div>
 
-          <Card className="p-8 border border-border bg-white text-black min-h-96">
+          <div className="p-8 border border-border bg-white text-black min-h-96">
             <div className="space-y-6">
               <div>
                 <h1 className="text-3xl font-bold">John Doe</h1>
@@ -260,7 +257,7 @@ export default function ResumeBuilder() {
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

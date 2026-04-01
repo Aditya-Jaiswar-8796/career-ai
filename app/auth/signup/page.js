@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Sparkles, Github } from 'lucide-react'
 import { signIn, signOut, useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const containerRef = useRef(null)
@@ -39,6 +40,7 @@ export default function SignupPage() {
         email,
         password: pass,
         name,
+        role: userType,
       }),
     });
 

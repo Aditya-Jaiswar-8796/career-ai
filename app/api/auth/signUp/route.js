@@ -8,7 +8,7 @@ export async function POST(req) {
     await connectDB();
 
     const body = await req.json();
-    const { name, email, password } = body;
+    const { name, email, password, role } = body;
 
     console.log(body)
     const userExists = await user.findOne({ email });
@@ -27,11 +27,12 @@ export async function POST(req) {
       name,
       email,
       password: hashedPassword,
+      role,
     });
 
     return NextResponse.json({
       success: true,
-      user: { name: User.name, email: User.email, id: User._id },
+      user: { name: User.name, email: User.email, id: User._id, role: User.role },
     });
   } catch (error) {
     console.error(error);

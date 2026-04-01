@@ -180,20 +180,10 @@ export default function ResumeAnalyzer() {
   const handleDragOver = (e) => {
     e.preventDefault()
     setIsDragging(true)
-    gsap.to(uploadRef.current, {
-      duration: 0.2,
-      backgroundColor: 'var(--primary)',
-      opacity: 0.05
-    })
   }
 
   const handleDragLeave = () => {
     setIsDragging(false)
-    gsap.to(uploadRef.current, {
-      duration: 0.2,
-      backgroundColor: 'transparent',
-      opacity: 1
-    })
   }
 
   const feedbackItems = [

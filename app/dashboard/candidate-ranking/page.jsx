@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Star, Mail, Phone, FileText, TrendingUp } from 'lucide-react'
 
 export default function CandidateRanking() {
@@ -77,7 +75,7 @@ export default function CandidateRanking() {
 
       <div ref={candidatesRef} className="space-y-4">
         {candidates.map((candidate) => (
-          <Card
+          <div
             key={candidate.rank}
             data-candidate-card
             className="p-6 border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all"
@@ -136,33 +134,33 @@ export default function CandidateRanking() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="gap-2">
+                  <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
                     <Mail className="w-4 h-4" />
                     Send Offer
-                  </Button>
-                  <Button size="sm" variant="outline" className="gap-2">
+                  </button>
+                  <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                     <FileText className="w-4 h-4" />
                     View Resume
-                  </Button>
-                  <Button size="sm" variant="outline" className="gap-2">
+                  </button>
+                  <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                     <Phone className="w-4 h-4" />
                     Schedule Call
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
-      <Card className="mt-8 p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
+      <div className="mt-8 p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
         <h3 className="text-lg font-bold text-foreground mb-3">Hiring Insights</h3>
         <ul className="space-y-2 text-muted-foreground text-sm">
           <li className="flex gap-2"><span className="text-primary">→</span> Top 3 candidates recommended for interview</li>
           <li className="flex gap-2"><span className="text-primary">→</span> Sarah Johnson is the best fit for this role</li>
           <li className="flex gap-2"><span className="text-primary">→</span> Consider Mike Chen as backup candidate</li>
         </ul>
-      </Card>
+      </div>
     </div>
   )
 }

@@ -62,18 +62,18 @@ def match_resume_prompt(resume, job_description):
     Compare the following resume with the job description.
 
     Return JSON with:
-
-    match_score (5-98)
-    score_breakdown:
-    - skills_match
-    - experience_match
-    - education_match
-    - tools_match
-    - soft_skills_match
+    jobTitle
+    matchScore (5-98)
+    scoreBreakdown:
+    - skillsMatch
+    - experienceMatch
+    - educationMatch
+    - softSkillsMatch
     
-    missing_skills
-    strengths
-    suggestions
+    missingSkills
+    matchSkills
+    strengths: 3
+    suggestions: 3
 
     Do not return 0 unless absolutely no relation exists.
 

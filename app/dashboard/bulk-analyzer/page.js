@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Upload, Download, Trash2, CheckCircle2 } from 'lucide-react'
 
 export default function BulkAnalyzer() {
@@ -30,15 +28,28 @@ export default function BulkAnalyzer() {
     })
   }, [])
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     setAnalyzing(true)
     const progressEl = uploadRef.current?.querySelector('.progress-bar')
-    
+
     gsap.to(progressEl, {
       duration: 3,
       width: '100%',
       ease: 'power2.out'
     })
+
+    let formData = new FormData()
+    files.forEach((file) => {
+      formData.append('resumes', file)
+    })
+    
+    let response = await fetch('/api/bulk-analyze', {
+      method: 'POST',
+      body: formData
+    })
+    let result = await response.json()
+    console.log(result);
+    
 
     setTimeout(() => {
       setAnalyzing(false)
@@ -52,11 +63,16 @@ export default function BulkAnalyzer() {
     }, 3000)
   }
 
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
+  }
   const candidates = [
     { name: 'Sarah Johnson', role: 'Senior Developer', match: 92, status: 'excellent' },
-    { name: 'Mike Chen', role: 'Frontend Engineer', match: 78, status: 'good' },
-    { name: 'Emily Davis', role: 'Full Stack', match: 85, status: 'good' },
-    { name: 'Alex Kumar', role: 'DevOps Engineer', match: 65, status: 'fair' }
   ]
 
   return (
@@ -67,6 +83,16 @@ export default function BulkAnalyzer() {
       </div>
 
       <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => {
+          e.preventDefault()
+          let file = e.dataTransfer.files[0]
+          if (file) {
+            setFiles((prev) => [...prev, file])
+          }
+        }}
+        onClick={() => document.getElementById('resume-input')?.click()}
         ref={uploadRef}
         className="border-2 border-dashed border-border rounded-xl p-12 text-center mb-8 hover:border-primary transition-colors"
       >
@@ -77,10 +103,21 @@ export default function BulkAnalyzer() {
         </div>
         <h2 className="text-2xl font-semibold text-foreground mb-2">Drop resumes here</h2>
         <p className="text-muted-foreground mb-6">Upload up to 100 resumes at once (ZIP or PDF)</p>
-        
-        <Button onClick={handleAnalyze} disabled={analyzing} size="lg">
+        <input
+                  id="resume-input"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setFiles((prev) => [...prev, file])
+                    }
+                  }}
+                  className="hidden"
+                />
+        <button type="button" onClick={handleAnalyze} disabled={analyzing} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
           {analyzing ? 'Analyzing...' : 'Upload & Analyze'}
-        </Button>
+        </button>
 
         {analyzing && (
           <div className="mt-6">
@@ -96,10 +133,10 @@ export default function BulkAnalyzer() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold text-foreground">Results</h3>
-            <Button variant="outline" size="sm" className="gap-2">
+            <button type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
               <Download className="w-4 h-4" />
               Export CSV
-            </Button>
+            </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -134,21 +171,20 @@ export default function BulkAnalyzer() {
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                        candidate.status === 'excellent'
+                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${candidate.status === 'excellent'
                           ? 'bg-green-500/20 text-green-700 dark:text-green-300'
                           : candidate.status === 'good'
-                          ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
-                          : 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
-                      }`}>
+                            ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                            : 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
+                        }`}>
                         {candidate.status === 'excellent' && <CheckCircle2 className="w-3 h-3" />}
                         {candidate.status.charAt(0).toUpperCase() + candidate.status.slice(1)}
                       </span>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <Button size="sm" variant="ghost" className="gap-1">
+                      <button type="button" className="inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
                         View
-                      </Button>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -156,17 +192,17 @@ export default function BulkAnalyzer() {
             </table>
           </div>
 
-          <Card className="p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
+          <div className="p-6 border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
             <h3 className="text-lg font-bold text-foreground mb-2">Bulk Actions</h3>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline">Send Rejection Email</Button>
-              <Button size="sm" variant="outline">Send Interview Invite</Button>
-              <Button size="sm" variant="outline">Add to Pipeline</Button>
-              <Button size="sm" variant="outline" className="text-destructive">
+              <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Send Rejection Email</button>
+              <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Send Interview Invite</button>
+              <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Add to Pipeline</button>
+              <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-destructive hover:text-destructive">
                 Delete Selected
-              </Button>
+              </button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>
