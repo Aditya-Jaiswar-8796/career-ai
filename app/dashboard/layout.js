@@ -2,8 +2,9 @@
 
 import { BarChart3, FileText, Target, Zap, Building2, User, LogOut, Settings, Menu, Brain, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
-import { useSession, signOut } from "next-auth/react"
+import { useState, useEffect, useRef,  } from 'react'
+import { useSession, signOut} from "next-auth/react"
+import { useRouter } from 'next/navigation'
 
 
 
@@ -32,10 +33,28 @@ export default function DashboardLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false)
   const headerRef = useRef(null)
   const sidebarRef = useRef(null)
+  const router = useRouter()
 
+  console.log("Session in layout:", session)
 
-  const items = userType === 'seeker' ? menuItems : hrMenuItems
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
 
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  const items = (userType === 'seeker') ? menuItems : hrMenuItems
+  if (!session) {
+  router.push('/auth/login')
+  return null
+}
   return (
     <div>
       <div onClick={() => { userPanel && setUserPanel(false) }} className="flex h-screen bg-background">

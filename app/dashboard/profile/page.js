@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { User, Mail, Lock, Bell, Shield, LogOut, Save } from 'lucide-react'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 export default function Profile() {
   const containerRef = useRef(null)
   const sectionsRef = useRef(null)
-
+  const [user, setuser] = useState()
   const { data: session, status } = useSession()
   const router = useRouter()
   useEffect(() => {
@@ -49,21 +49,21 @@ export default function Profile() {
             <div className="grid md:grid-cols-2 gap-16">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">First Name</label>
-                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue="John" />
+                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue={session?.user.name.split(' ')[0]} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Last Name</label>
-                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue="Doe" />
+                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue={session?.user.name.split(' ')[1]} />
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-16">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
-                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="email" />
+                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="email" defaultValue={session?.user.email} disabled/>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
-                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="tel" />
+                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="tel" onChange={(e) => { setuser(e.target.value) }} />
               </div>
             </div>
             <button className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6">

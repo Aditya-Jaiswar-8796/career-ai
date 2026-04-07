@@ -2,26 +2,20 @@ import zipfile
 import os
 from services.parser import parse_resume
 from services.semantic_matcher import semantic_match
+from services.bulk_details import bulk_analyze
+
+def analyze_bulk_resumes(name,file_bytes, job_description):
 
 
-def analyze_bulk_resumes(zip_file, job_description):
-
-    results = []
-
-    for name in zip_file.namelist():
-
-        with zip_file.open(name) as f:
-            file_bytes = f.read()
-
-            resume_text = parse_resume(file_bytes, False)
-
-            match = semantic_match(resume_text, job_description)
-
-            results.append({
-                "name": name,
-                "score": match["match_score"]
-            })
-            
-    ranked = sorted(results, key=lambda x: x["score"], reverse=True)
-
-    return ranked
+    resume_text = parse_resume(file_bytes, False)
+    match = semantic_match(resume_text, job_description)
+    details = bulk_analyze(resume_text, job_description, match["match_score"])   
+    return [{
+        "file_name": name,
+        "name": details["candidateName"],
+        "match": match["match_score"],
+        "status": details["status"],
+        "role": details["role"],
+        "summary": details["candidateSummary"]
+    }]
+                

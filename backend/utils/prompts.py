@@ -116,3 +116,26 @@ Job Description:
 
 Return ONLY JSON.
 """
+
+
+def bulk_analyze_prompt(resume, job_description, match_score):
+
+    return f"""
+    You are an expert recruiter.
+
+    Comparing the following resume with the job description we get sementic match score of {match_score} out of 100.
+
+
+    Return JSON with:
+    
+    candidateSummary: A brief summary of the candidate's profile.
+    status: "Strong Match", "Good Match", "Weak Match", or "No Match" based on the match score.
+    role: The most suitable role for the candidate based on their resume and the job description. 
+    candidateName: Extract the candidate's name from the resume.
+
+    Resume:
+    {resume}
+
+    Job Description:
+    {job_description}
+    """
