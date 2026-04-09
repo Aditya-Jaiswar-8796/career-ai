@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.rewrite import rewrite_resume
+from ..services.rewrite import rewrite_resume
 
 router = APIRouter()
 

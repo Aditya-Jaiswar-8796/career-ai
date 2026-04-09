@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
-from routes import resume
-from routes import job
-from routes import skill_gap
-from routes import rewrite
-from routes import bulk_resume
+from .routes import resume
+from .routes import job
+from .routes import skill_gap
+from .routes import rewrite
+from .routes import bulk_resume
 
 app = FastAPI()
 

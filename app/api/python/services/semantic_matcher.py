@@ -1,5 +1,5 @@
-from services.embedding_service import get_embedding
-from utils.similarity import cosine_similarity
+from .embedding_service import get_embedding
+from ..utils.similarity import cosine_similarity
 
 def semantic_match(resume, job):
 

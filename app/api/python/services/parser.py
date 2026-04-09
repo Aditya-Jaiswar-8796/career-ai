@@ -1,6 +1,6 @@
 
-from services.ai_engine import ask_ai
-from utils.prompts import resume_parse_prompt
+from .ai_engine import ask_ai
+from ..utils.prompts import resume_parse_prompt
 import fitz
 
 def parse_resume(file_bytes,ifjson: bool):

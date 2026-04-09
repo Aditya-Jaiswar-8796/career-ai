@@ -1,8 +1,8 @@
 import zipfile
 import os
-from services.parser import parse_resume
-from services.semantic_matcher import semantic_match
-from services.bulk_details import bulk_analyze
+from .parser import parse_resume
+from .semantic_matcher import semantic_match
+from .bulk_details import bulk_analyze
 
 def analyze_bulk_resumes(name,file_bytes, job_description):
 

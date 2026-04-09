@@ -1,5 +1,5 @@
-from services.ai_engine import ask_ai
-from utils.prompts import bulk_analyze_prompt
+from .ai_engine import ask_ai
+from ..utils.prompts import bulk_analyze_prompt
 
 def bulk_analyze(resume, job, match_score):
 

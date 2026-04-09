@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File
-from services.parser import parse_resume
+from ..services.parser import parse_resume
 
 
 router = APIRouter()

@@ -1,5 +1,5 @@
-from utils.prompts import skill_gap_prompt
-from services.ai_engine import ask_ai
+from ..utils.prompts import skill_gap_prompt
+from .ai_engine import ask_ai
 
 
 def analyze_skill_gap(resume, job):

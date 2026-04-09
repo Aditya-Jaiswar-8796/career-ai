@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.skill_gap import analyze_skill_gap
+from ..services.skill_gap import analyze_skill_gap
 
 router = APIRouter()
 

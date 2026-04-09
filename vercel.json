@@ -1,14 +1,15 @@
 {
   "version": 2,
   "functions": {
-    "python/index.py": {
+    "app/api/python/route.py": {
+      "runtime": "python3.9",
       "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/python/:path*",
-      "destination": "/python/index.py"
+      "destination": "/api/python/route.py"
     }
   ]
 }

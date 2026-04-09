@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, File, UploadFile, Form
-from services.bulk_analyzer import analyze_bulk_resumes
+from ..services.bulk_analyzer import analyze_bulk_resumes
 
 router = APIRouter()
 

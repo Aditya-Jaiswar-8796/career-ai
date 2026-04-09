@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.matcher import match_resume_job
+from ..services.matcher import match_resume_job
 
 router = APIRouter()
 
