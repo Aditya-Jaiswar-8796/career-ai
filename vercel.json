@@ -2,7 +2,6 @@
   "version": 2,
   "functions": {
     "app/api/python/route.py": {
-      "runtime": "python3.9",
       "maxDuration": 60
     }
   },
