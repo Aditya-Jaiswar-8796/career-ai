@@ -1,14 +1,14 @@
 {
   "version": 2,
   "functions": {
-    "python/main.py": {
+    "python/index.py": {
       "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/python/:path*",
-      "destination": "/python/main.py"
+      "destination": "/python/index.py"
     }
   ]
 }
