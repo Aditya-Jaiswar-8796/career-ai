@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "functions": {
     "app/api/python/main.py": {
       "runtime": "python@3.12"
