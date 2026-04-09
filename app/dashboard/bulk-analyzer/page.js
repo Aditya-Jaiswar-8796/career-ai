@@ -49,7 +49,7 @@ export default function BulkAnalyzer() {
       formData.append('files', file)
     })
     formData.append('job_description', jobDescription)
-    let response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/bulk-analyze`, {
+    let response = await fetch(`/api/bulk-analyze`, {
       method: 'POST',
       body: formData
     })

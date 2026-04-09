@@ -5,13 +5,10 @@ const nextConfig = {
   rewrites: async () => {
     return [
       {
-        // This captures any request starting with /api/python/
-        source: '/api/python/:path*',
-        // In development, it points to your local Uvicorn server (usually port 8000)
-        // In production (Vercel), it points to the actual file location
+        source: '/api/:path*',
         destination: process.env.NODE_ENV === 'development'
-          ? 'http://127.0.0.1:8000/api/python/:path*'
-          : '/api/python/main.py', 
+          ? 'http://127.0.0.1:8000/:path*' // Your local FastAPI port
+          : '/api/main.py',               // Vercel Function
       },
     ];
   },

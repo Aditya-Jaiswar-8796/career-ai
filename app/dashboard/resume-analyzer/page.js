@@ -163,7 +163,7 @@ export default function ResumeAnalyzer() {
     formData.append("file", file)
 
     handleAnalyze()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload-resume`, {
+    const res = await fetch(`/api/upload-resume`, {
       method: "POST",
       body: formData
     })

@@ -51,13 +51,13 @@ export default function ResumeMatch() {
     setAnalyzing(true)
     const formData = new FormData();
     formData.append("file", resumeFile)
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload-resume`, {
+    const res = await fetch(`/api/upload-resume`, {
       method: "POST",
       body: formData
     })
     const datum = await res.json()
 
-    const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/match-job`, {
+    const resp = await fetch(`/api/match-job`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
