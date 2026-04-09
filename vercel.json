@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "app/api/python/main.py": {
+      "runtime": "python@3.12"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/python/:path*",
+      "destination": "/app/api/python/main.py"
+    }
+  ]
+}

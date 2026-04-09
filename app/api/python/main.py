@@ -8,6 +8,7 @@ from routes import bulk_resume
 app = FastAPI()
 
 origins = [
+    "http://localhost:3000",
     "https://career-ai-self-nine.vercel.app",
 ]
 
