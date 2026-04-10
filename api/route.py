@@ -27,7 +27,7 @@ app.include_router(skill_gap.router)
 app.include_router(job.router)
 app.include_router(resume.router)
 
-@app.get("")
+@app.get("/py")
 def home():
     return {"message": "AI Resume Backend Running"}
 
