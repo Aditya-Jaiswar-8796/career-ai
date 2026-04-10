@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import resume
-from .routes import job
-from .routes import skill_gap
-from .routes import rewrite
-from .routes import bulk_resume
+from mangum import Mangum
+
+from routes import resume, job, skill_gap, rewrite, bulk_resume
 
 app = FastAPI()
 
@@ -30,3 +28,6 @@ app.include_router(resume.router)
 @app.get("/")
 def home():
     return {"message": "AI Resume Backend Running"}
+
+# ✅ THIS IS THE FIX
+handler = Mangum(app)

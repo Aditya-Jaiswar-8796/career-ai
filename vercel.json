@@ -1,14 +1,14 @@
 {
-  "version": 2,
   "functions": {
-    "app/api/route.py": {
+    "api/route.py": {
+      "runtime": "python3.11",
       "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/python/:path*",
-      "destination": "/api/route.py"
+      "destination": "/api/route/:path*"
     }
   ]
 }
