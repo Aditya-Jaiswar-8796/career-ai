@@ -3,19 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
 from .routes import resume, job, skill_gap, rewrite, bulk_resume
-import os
-print("FILES:", os.listdir())
 
-app = FastAPI()
-
-origins = [
-    "http://localhost:3000",
-    "https://career-ai-self-nine.vercel.app",
-]
+app = FastAPI(root_path="/api/route")  # 🔥 FIX
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://career-ai-self-nine.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,5 +27,4 @@ app.include_router(resume.router)
 def home():
     return {"message": "AI Resume Backend Running"}
 
-# ✅ THIS IS THE FIX
 handler = Mangum(app)
