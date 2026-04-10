@@ -1,14 +1,14 @@
 {
   "version": 2,
   "functions": {
-    "app/api/python/route.py": {
+    "app/api/route.py": {
       "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/python/:path*",
-      "destination": "/api/python"
+      "destination": "/api/route.py"
     }
   ]
 }
