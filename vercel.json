@@ -6,8 +6,8 @@
   },
   "rewrites": [
     {
-      "source": "/python/:path*",
-      "destination": "/api/route/:path*"
+      "source": "/python/(.*)",
+      "destination": "/api/route"
     }
   ]
 }

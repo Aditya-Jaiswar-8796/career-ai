@@ -4,7 +4,7 @@ from mangum import Mangum
 
 from .routes import resume, job, skill_gap, rewrite, bulk_resume
 
-app = FastAPI(root_path="/api/route")  # 🔥 FIX
+app = FastAPI(root_path="/python")
 
 app.add_middleware(
     CORSMiddleware,
