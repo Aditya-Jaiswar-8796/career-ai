@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-from routes import resume, job, skill_gap, rewrite, bulk_resume
+from .routes import resume, job, skill_gap, rewrite, bulk_resume
+import os
+print("FILES:", os.listdir())
 
 app = FastAPI()
 
