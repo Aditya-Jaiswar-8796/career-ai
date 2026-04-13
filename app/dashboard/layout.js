@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef,  } from 'react'
 import { useSession, signOut} from "next-auth/react"
 import { useRouter } from 'next/navigation'
+import gsap from 'gsap'
 
 
 
@@ -28,12 +29,13 @@ const hrMenuItems = [
 export default function DashboardLayout({ children }) {
 
   const { data: session, status } = useSession()
-  const [userType, setUserType] = useState(session?.user.role)
+  const [userType, setUserType] = useState(session?.user?.role || 'seeker')
   const [userPanel, setUserPanel] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const headerRef = useRef(null)
   const sidebarRef = useRef(null)
   const router = useRouter()
+  const [sidebar, setSidebar] = useState(true)
 
   console.log("Session in layout:", session)
 
@@ -50,11 +52,36 @@ export default function DashboardLayout({ children }) {
     }
   }, [])
 
-  const items = (userType === 'seeker') ? menuItems : hrMenuItems
-  if (!session) {
-  router.push('/auth/login')
-  return null
-}
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login')
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      setUserType(session?.user?.role || 'seeker')
+    }
+  }, [status, session])
+
+  if (status === 'loading' || status === 'unauthenticated') {
+    return null
+  }
+
+  const items = userType !== 'seeker' ? hrMenuItems : menuItems
+
+  const side = () => { 
+    setSidebar(!sidebar);
+
+    gsap.to(sidebarRef.current, {
+      width: sidebar ? 0 : 200,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+   }
+
+
+
   return (
     <div>
       <div onClick={() => { userPanel && setUserPanel(false) }} className="flex h-screen bg-background">
@@ -66,14 +93,15 @@ export default function DashboardLayout({ children }) {
               CareerAI
             </Link>
           </div>
-          <div ref={sidebarRef} className="p-4">
-            <div className="space-y-2">
+          <div ref={sidebarRef} className="p-4 relative">
+            <img onClick={side} src={sidebar ? "/close.svg" : "/menu.svg"} alt="" className='absolute w-5 h-5 z-10 bg-background rounded-full right-2 top-2'/>
+            <div className="flex flex-col py-2 mt-4">
               {items.map((item) => {
                 const Icon = item.icon
                 return (
                   <div key={item.href} data-menu-item>
                     <div className="group relative">
-                      <Link href={item.href} className="flex items-center gap-3 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300">
+                      <Link href={item.href} className="flex items-center gap-3 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 ">
                         <Icon className="w-5 h-5" />
                         <span>{item.label}</span>
                       </Link>

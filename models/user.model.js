@@ -15,10 +15,14 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type: String,
-        enum: ['seeker', 'recruiter'],
+        enum: ['seeker', 'recruiter', 'user'],
         default: 'seeker',
         required: true,
-    }
+    },
+    profile: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
+    },
 })
 
 const userModel = mongoose.models.User || mongoose.model('User', userSchema)

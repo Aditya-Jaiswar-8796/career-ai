@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\definecolor{heading}{HTML}{111827}
+\definecolor{subheading}{HTML}{4B5563}
+\definecolor{line}{HTML}{E5E7EB}
+
+\titleformat{\section}{\large\bfseries\color{heading}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+  {\LARGE\bfseries {name}}\\
+  {\small\color{subheading} {title} \\ {email} | {phone} | {linkedin}}\\[6pt]
+  \noindent\rule{0.9\linewidth}{0.4pt}
+\end{center}
+
+\section*{Profile}
+{summary}
+
+\section*{Experience}
+{experience}
+
+\section*{Skills}
+{skills}
+
+\section*{Education}
+{education}
+
+\section*{Projects}
+{projects}
+
+\end{document}

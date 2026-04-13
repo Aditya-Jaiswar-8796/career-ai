@@ -8,7 +8,19 @@ import { useRouter } from 'next/navigation'
 export default function Profile() {
   const containerRef = useRef(null)
   const sectionsRef = useRef(null)
-  const [user, setuser] = useState()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [currentTitle, setCurrentTitle] = useState('')
+  const [company, setCompany] = useState('')
+  const [yearsExperience, setYearsExperience] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [statusMessage, setStatusMessage] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
   const { data: session, status } = useSession()
   const router = useRouter()
   useEffect(() => {
@@ -16,8 +28,115 @@ export default function Profile() {
 
     if (!session) {
       router.push('/auth/login')
+      return
     }
+
+    loadProfile()
   }, [session, status, router])
+
+  const loadProfile = async () => {
+    if (status !== 'authenticated' || !session?.user?.email) return
+
+    try {
+      const res = await fetch('/api/user/profile')
+      if (!res.ok) {
+        console.error('Failed to load profile, status:', res.status)
+        return
+      }
+      const data = await res.json()
+      if (!data.success) return
+
+      const nameParts = data.user?.name?.split(' ') || []
+      setFirstName(nameParts[0] || '')
+      setLastName(nameParts.slice(1).join(' ') || '')
+      setEmail(data.user.email || '')
+      setPhone(data.profile?.phone || '')
+      setCurrentTitle(data.profile?.currentTitle || '')
+      setCompany(data.profile?.company || '')
+      setYearsExperience(data.profile?.yearsExperience?.toString() || '')
+    } catch (error) {
+      console.error('Failed to load profile', error)
+    }
+  }
+
+  const saveProfile = async () => {
+    setStatusMessage('Saving profile...')
+    setIsSaving(true)
+
+    try {
+      const name = `${firstName.trim()} ${lastName.trim()}`.trim()
+      const res = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userUpdates: { name },
+          profileUpdates: {
+            phone,
+            currentTitle,
+            company,
+            yearsExperience: yearsExperience ? Number(yearsExperience) : 0,
+          },
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setStatusMessage(data.message || 'Unable to save profile')
+        return
+      }
+      setStatusMessage('Profile saved successfully')
+    } catch (error) {
+      console.error('Profile save error', error)
+      setStatusMessage('Unable to save profile')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const changePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setStatusMessage('Please fill all password fields')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setStatusMessage('New passwords do not match')
+      return
+    }
+
+    setStatusMessage('Updating password...')
+    setIsChangingPassword(true)
+
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          passwordChange: {
+            currentPassword,
+            newPassword,
+          },
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setStatusMessage(data.message || 'Unable to update password')
+        return
+      }
+      setStatusMessage('Password updated successfully')
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (error) {
+      console.error('Password change error', error)
+      setStatusMessage('Unable to update password')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
 
 
   return (
@@ -49,27 +168,50 @@ export default function Profile() {
             <div className="grid md:grid-cols-2 gap-16">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">First Name</label>
-                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue={session?.user.name.split(' ')[0]} />
+                <input
+                  className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Last Name</label>
-                <input className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" defaultValue={session?.user.name.split(' ')[1]} />
+                <input
+                  className=" px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-16">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
-                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="email" defaultValue={session?.user.email} disabled/>
+                <input
+                  className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  type="email"
+                  value={email}
+                  disabled
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
-                <input className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="tel" onChange={(e) => { setuser(e.target.value) }} />
+                <input
+                  className="px-4 py-2 w-full rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </div>
             </div>
-            <button className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6">
+            <button
+              onClick={saveProfile}
+              disabled={isSaving}
+              className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Save className="w-4 h-4 " />
               Save Changes
             </button>
+            {statusMessage && <p className="text-sm text-muted-foreground mt-2">{statusMessage}</p>}
           </div>
         </section>
 
@@ -79,21 +221,39 @@ export default function Profile() {
           <div className="flex flex-col mb-4  md:flex-row justify-between items-center gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Current Title</label>
-              <input className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+              <input
+                className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                value={currentTitle}
+                onChange={(e) => setCurrentTitle(e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Company</label>
-              <input className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+              <input
+                className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-nowrap text-foreground mb-2">Years of Experience</label>
-              <input className=" px-4 py-2 w-30 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="number" />
+              <input
+                className=" px-4 py-2 w-30 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                type="number"
+                value={yearsExperience}
+                onChange={(e) => setYearsExperience(e.target.value)}
+              />
             </div>
           </div>
-          <button className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6">
+          <button
+            onClick={saveProfile}
+            disabled={isSaving}
+            className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Save className="w-4 h-4 " />
             Save Changes
           </button>
+          {statusMessage && <p className="text-sm text-muted-foreground mt-2">{statusMessage}</p>}
         </section>
 
         {/* Security */}
@@ -106,15 +266,38 @@ export default function Profile() {
             <div>
               <p className="text-sm text-foreground font-medium mb-3">Change Password</p>
               <div className="flex flex-col  md:flex-row justify-between items-center gap-4">
-                <input className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="password" placeholder='Current Password'/>
-                <input className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="password" placeholder='New Password'/>
-                <input className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" type="password" placeholder='Confirm Password'/>
+                <input
+                  className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  type="password"
+                  placeholder='Current Password'
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <input
+                  className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  type="password"
+                  placeholder='New Password'
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <input
+                  className=" px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  type="password"
+                  placeholder='Confirm Password'
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
               </div>
             </div>
-            <button className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6">
+            <button
+              onClick={changePassword}
+              disabled={isChangingPassword}
+              className="gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Lock className="w-4 h-4" />
               Update Password
             </button>
+            {statusMessage && <p className="text-sm text-muted-foreground mt-2">{statusMessage}</p>}
           </div>
         </section>
 

@@ -1,46 +1,53 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Github, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useSession, signIn} from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
+import { useForm } from 'react-hook-form'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function LoginPage() {
   const containerRef = useRef(null)
   const formRef = useRef(null)
-  const [email, setemail] = useState('')
-  const [pass, setPass] = useState('')
   const router = useRouter()
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
+    if (status === 'authenticated') {
+      router.push('/')
     }
-  }, [status]);
+  }, [status])
 
-  const login = async () => {
-    if (!email || !pass) {
-      console.log("Please fill all required fields");
-      return;
-    }
-    console.log("login....");
-    
-    const res = await signIn("credentials", {
+  const login = async (formValues) => {
+    const { email, password } = formValues
+
+    const res = await signIn('credentials', {
       email,
-      password: pass,
+      password,
       redirect: false,
-    });
-    
+    })
+
     if (res?.error) {
-      console.log("Login failed:", res.error);
-      return;
+      toast.error(res.error)
+      return
     }
-    
-    console.log("no error....");
-    router.push("/");
-    router.refresh();
+
+    toast.success('Signed in successfully')
+    router.push('/')
+    router.refresh()
   }
 
 
@@ -60,23 +67,39 @@ export default function LoginPage() {
           <p className="text-muted-foreground">Sign in to continue to your dashboard</p>
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit(login)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Email</label>
             <input
-              type="email" onChange={(e) => { setemail(e.target.value) }}
+              type="email"
               placeholder="you@example.com"
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Enter a valid email',
+                },
+              })}
               className="form-input w-full px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
+            {errors.email && <p className="text-sm text-destructive mt-1">{errors.email.message}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Password</label>
             <input
-              type="password" onChange={(e) => { setPass(e.target.value) }}
+              type="password"
               placeholder="••••••••"
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters',
+                },
+              })}
               className="form-input w-full px-4 py-2 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
+            {errors.password && <p className="text-sm text-destructive mt-1">{errors.password.message}</p>}
           </div>
 
           <div className="flex items-center justify-between text-sm">
@@ -89,10 +112,11 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <button type="button" onClick={login} className="w-full py-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-lg px-6">
+          <button type="submit" className="w-full py-2 whitespace-nowrap text-sm font-medium transition-all shrink-0 outline-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-lg px-6">
             Sign In
           </button>
         </form>
+        <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { Upload, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react'
 import { useGSAP } from '@gsap/react'
+import { useSession } from 'next-auth/react'
 
 export default function ResumeAnalyzer() {
   const containerRef = useRef(null)
@@ -13,6 +14,7 @@ export default function ResumeAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
   const [result, setResult] = useState({})
+  const { data: session } = useSession()
 
   useEffect(() => {
   if (isAnalyzing) {
@@ -171,6 +173,21 @@ export default function ResumeAnalyzer() {
     setResult(data.resume_json)
     setIsAnalyzing(false)
     setAnalyzed(true)
+
+    if (session?.user?.email) {
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ resumeJson: data.resume_json }),
+        })
+      } catch (error) {
+        console.error('Error saving resume data:', error)
+      }
+    }
+
     console.log(data.resume_json);
     console.log(result);
 

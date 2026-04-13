@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import user from "@/models/user.model";
+import Profile from "@/models/profile.model";
 import connectDB from "@/db/db";
 import bcrypt from "bcrypt";
 
@@ -29,7 +30,10 @@ export async function POST(req) {
       password: hashedPassword,
       role,
     });
-    
+
+    const profile = await Profile.create({ user: User._id })
+    User.profile = profile._id
+    await User.save()
 
     return NextResponse.json({
       success: true,

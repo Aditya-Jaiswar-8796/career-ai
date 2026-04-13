@@ -1,0 +1,47 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{primary}{HTML}{1F2937}
+\definecolor{secondary}{HTML}{4B5563}
+\definecolor{accent}{HTML}{2563EB}
+\definecolor{panel}{HTML}{F3F4F6}
+
+\titleformat{\section}{\large\bfseries\color{primary}}{}{0em}{}
+\titlespacing*{\section}{0pt}{10pt}{6pt}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{minipage}[t]{0.65\textwidth}
+  {\LARGE\bfseries {name}}\\
+  {\large\color{secondary} {title}}\\[8pt]
+  {\small {email} $\vert$ {phone} $\vert$ {linkedin}}\\
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+  \raggedleft
+  \colorbox{accent}{\parbox[t]{0.96\linewidth}{\vspace{6pt}\color{white}\textbf{Career Snapshot}\vspace{6pt}}}\\[8pt]
+  \textcolor{secondary}{\small {summary}}
+\end{minipage}
+
+\vspace{12pt}
+\noindent\rule{\linewidth}{0.5pt}
+\vspace{12pt}
+
+\section*{Experience}
+{experience}
+
+\section*{Education}
+{education}
+
+\section*{Skills}
+{skills}
+
+\section*{Projects}
+{projects}
+
+\end{document}

@@ -3,6 +3,7 @@ import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "@/db/db";
 import User from "@/models/user.model";
+ import Profile from "@/models/profile.model";
 import bcrypt from "bcrypt";
 
 export const authOptions = {
@@ -55,13 +56,21 @@ export const authOptions = {
         });
 
         if (!existingUser) {
-          await User.create({
+          const createdUser = await User.create({
             name: user.name,
             email: user.email,
             role: "user", // ✅ default role
           });
+          const createdProfile = await Profile.create({ user: createdUser._id })
+          createdUser.profile = createdProfile._id
+          await createdUser.save()
         } else {
           user.role = existingUser.role; // 👈 IMPORTANT
+          if (!existingUser.profile) {
+            const createdProfile = await Profile.create({ user: existingUser._id })
+            existingUser.profile = createdProfile._id
+            await existingUser.save()
+          }
         }
       }
 

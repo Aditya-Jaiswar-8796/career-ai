@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\definecolor{accent}{HTML}{1D4ED8}
+\definecolor{head}{HTML}{111827}
+\titleformat{\section}{\large\bfseries\color{head}}{}{0em}{}
+\titlespacing*{\section}{0pt}{10pt}{6pt}
+\begin{document}
+\pagestyle{empty}
+\begin{minipage}[t]{0.6\textwidth}
+  {\LARGE\bfseries {name}}\\
+  {\large {title}}\\
+  {email}\\
+  {phone}\\
+  {linkedin}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+  \textbf{Profile}\\
+  {summary}
+\end{minipage}
+
+\vspace{12pt}
+\section*{Experience}
+{experience}
+
+\section*{Skills}
+{skills}
+
+\section*{Education}
+{education}
+
+\section*{Projects}
+{projects}
+\end{document}
