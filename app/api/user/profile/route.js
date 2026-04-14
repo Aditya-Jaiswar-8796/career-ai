@@ -30,7 +30,7 @@ export async function GET(req) {
 
   const profile = await getOrCreateProfile(user)
 
-  return NextResponse.json({ success: true, user: { name: user.name, email: user.email, role: user.role }, profile })
+  return NextResponse.json({ success: true, user: { id: user._id.toString(), name: user.name, email: user.email, role: user.role }, profile })
 }
 
 async function getOrCreateProfile(user) {

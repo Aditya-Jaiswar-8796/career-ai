@@ -5,6 +5,9 @@ from routes import job
 from routes import skill_gap
 from routes import rewrite
 from routes import bulk_resume
+from routes import cover_letter
+from routes import resume_builder
+
 app = FastAPI()
 
 origins = [
@@ -22,6 +25,8 @@ app.add_middleware(
 
 app.include_router(bulk_resume.router)
 app.include_router(rewrite.router)
+app.include_router(cover_letter.router)
+app.include_router(resume_builder.router)
 
 app.include_router(skill_gap.router)
 app.include_router(job.router)

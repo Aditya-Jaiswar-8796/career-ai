@@ -56,6 +56,7 @@ export default function ResumeBuilder() {
   const [selectedTemplate, setSelectedTemplate] = useState('modern')
   const [formData, setFormData] = useState(defaultData)
   const [skillInput, setSkillInput] = useState('')
+  const [downloading, setDownloading] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -143,6 +144,39 @@ export default function ResumeBuilder() {
     setSkillInput('')
   }
 
+  const downloadResumePdf = async () => {
+    setDownloading(true)
+    try {
+      const response = await fetch('/python/generate-resume-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ template: selectedTemplate, formData }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || 'Failed to generate PDF')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${formData.name?.replace(/\s+/g, '_') || 'resume'}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error(error)
+      alert(error.message || 'Unable to download resume PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const previewStyles = {
     modern: 'bg-white text-foreground',
     clean: 'bg-slate-50 text-foreground',
@@ -152,6 +186,8 @@ export default function ResumeBuilder() {
     onepage: 'bg-white text-foreground',
     creative: 'bg-slate-950 text-white',
   }
+
+  const templateFileName = `resume_template_${selectedTemplate}.tex`
 
   const sectionButtons = [
     { id: 'summary', label: 'Professional Summary', icon: '📝' },
@@ -491,6 +527,22 @@ export default function ResumeBuilder() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Live preview using the selected template</p>
+              <p className="text-base font-semibold text-foreground">{templateOptions.find((option) => option.id === selectedTemplate)?.label || 'Modern'}</p>
+              <p className="text-xs text-muted-foreground mt-1">Template file: <span className="font-medium text-foreground">{templateFileName}</span></p>
+            </div>
+            <button
+              onClick={downloadResumePdf}
+              disabled={downloading}
+              className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {downloading ? 'Generating PDF...' : 'Download PDF'}
+            </button>
           </div>
 
           <div className={`p-6 rounded-3xl border border-border min-h-[40rem] ${previewStyles[selectedTemplate]}`}>

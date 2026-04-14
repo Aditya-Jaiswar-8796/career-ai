@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart3, FileText, Target, Zap, Building2, User, LogOut, Settings, Menu, Brain, TrendingUp } from 'lucide-react'
+import { BarChart3, FileText, FileUser, Target, Zap, Building2, User, LogOut, Settings, Menu, Brain, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useRef,  } from 'react'
 import { useSession, signOut} from "next-auth/react"
@@ -15,7 +15,7 @@ const menuItems = [
   { icon: Target, label: 'Resume Match', href: '/dashboard/resume-match' },
   { icon: Zap, label: 'Skill Gap', href: '/dashboard/skill-gap' },
   { icon: Brain, label: 'Resume Builder', href: '/dashboard/resume-builder' },
-  { icon: TrendingUp, label: 'Career Roadmap', href: '/dashboard/career-roadmap' },
+  { icon: FileUser, label: 'Cover Letter', href: '/dashboard/cover-letter' },
   { icon: Settings, label: 'Resume Rewrite', href: '/dashboard/resume-rewrite' }
 ]
 
@@ -70,15 +70,32 @@ export default function DashboardLayout({ children }) {
 
   const items = userType !== 'seeker' ? hrMenuItems : menuItems
 
-  const side = () => { 
-    setSidebar(!sidebar);
+  const side = () => {
+    const next = !sidebar
+    setSidebar(next)
 
     gsap.to(sidebarRef.current, {
-      width: sidebar ? 0 : 200,
+      width: next ? 240 : 70,
       duration: 0.3,
       ease: "power2.out"
-    });
-   }
+    })
+
+    if (next) {
+      gsap.set(".title, .logo-title", { display: "inline" })
+      gsap.to(".title, .logo-title", {
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.out"
+      })
+    } else {
+      gsap.to(".title, .logo-title", {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.out",
+        onComplete: () => gsap.set(".title, .logo-title", { display: "none" })
+      })
+    }
+  }
 
 
 
@@ -89,21 +106,33 @@ export default function DashboardLayout({ children }) {
         <div className="border-r border-border">
           <div className="border-b border-border p-4">
             <Link href="/" className="flex items-center gap-2 font-bold text-primary">
-              <span className="text-xl">⚡</span>
-              CareerAI
+              <span className="text-xl mx-2">⚡</span>
+              <span className="logo-title text-base transition-opacity duration-200">CareerAI</span>
             </Link>
           </div>
-          <div ref={sidebarRef} className="p-4 relative">
-            <img onClick={side} src={sidebar ? "/close.svg" : "/menu.svg"} alt="" className='absolute w-5 h-5 z-10 bg-background rounded-full right-2 top-2'/>
-            <div className="flex flex-col py-2 mt-4">
+          <div
+            ref={sidebarRef}
+            style={{ width: sidebar ? 240 : 70 }}
+            className="p-4 overflow-hidden transition-all duration-300"
+            >
+            <img
+              onClick={side}
+              src="/menu.svg"
+              alt="Toggle sidebar"
+              className={`w-8 h-7 ${ sidebar ? 'mx-2.5' : "mx-1" } hover:bg-slate-400/20 p-1 rounded-full cursor-pointer`}
+            />
+            <div className="flex flex-col py-2">
               {items.map((item) => {
                 const Icon = item.icon
                 return (
                   <div key={item.href} data-menu-item>
                     <div className="group relative">
-                      <Link href={item.href} className="flex items-center gap-3 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 ">
+                      <Link
+                        href={item.href}
+                        className={`flex items-center ${sidebar ? 'gap-3 px-4' : 'justify-center gap-0 px-2'} py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50`}
+                      >
                         <Icon className="w-5 h-5" />
-                        <span>{item.label}</span>
+                        <span className="title">{item.label}</span>
                       </Link>
                     </div>
                   </div>
